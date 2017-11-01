@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 from millhouse import MissingTraceEventsError
-from millhouse.analyzer_module import requires_events
+from millhouse.analyzer_module import requires_events, AnalyzerModule
 
 #
 # TODO move the following into common module
@@ -29,18 +29,17 @@ def drop_consecutive_duplicates(df):
 
 drop_dupes = drop_consecutive_duplicates
 
-class IdleAnalyzerModule(object):
-    def __init__(self, analyzer):
-        self.analyzer = analyzer
+class IdleAnalyzerModule(AnalyzerModule):
+    required_events = ['cpu_idle']
+    def __init__(self, *args, **kwargs):
+        super(IdleAnalyzerModule, self).__init__(*args, **kwargs)
         self.has_events = 'cpu_idle' in self.analyzer.available_events
-        self.ftrace = self.analyzer.ftrace
-        self.cpus = analyzer.cpus
 
     # TODO should it be analyzer.idle.signal.cpu_idle_state?
     # Current is        analyzer.idle.get_cpu_idle_state_signal
     # TODO Make this aututomatically return a column for all CPUs if we know
     #      what the CPUs were
-    # @requires_events
+    @requires_events
     def get_cpu_idle_state_signal(self):
         """TODO doc"""
         df = self.ftrace.cpu_idle.data_frame
@@ -54,7 +53,7 @@ class IdleAnalyzerModule(object):
 
         return df
 
-    # @requires_events
+    @requires_events
     def get_cpu_wakeup_events(self):
         """TODO doc"""
         sr = pd.Series()
