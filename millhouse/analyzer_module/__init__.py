@@ -14,16 +14,19 @@
 #
 from wrapt import decorator
 
-@decorator
-def requires_events(wrapped, instance, args, kwargs):
-    # TODO add testcase with an assertRaises
-    """TODO doc"""
-    events = instance.required_events
+def requires_events(events=None):
+    @decorator
+    def wrapper(wrapped, instance, args, kwargs):
+        """TODO doc"""
+        # TODO add testcase with an assertRaises
+        _events = events or instance.required_events
 
-    missing_events = set(events) - set(instance.analyzer.available_events)
-    if missing_events:
-        raise MissingTraceEventsError(missing_events)
-    return wrapped(*args, **kwargs)
+        missing_events = set(_events) - set(instance.analyzer.available_events)
+        if missing_events:
+            raise MissingTraceEventsError(missing_events)
+
+        return wrapped(*args, **kwargs)
+    return wrapper
 
 class AnalyzerModule(object):
     """TODO doc"""

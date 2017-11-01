@@ -39,7 +39,7 @@ class IdleAnalyzerModule(AnalyzerModule):
     # Current is        analyzer.idle.get_cpu_idle_state_signal
     # TODO Make this aututomatically return a column for all CPUs if we know
     #      what the CPUs were
-    @requires_events
+    @requires_events()
     def get_cpu_idle_state_signal(self):
         """TODO doc"""
         df = self.ftrace.cpu_idle.data_frame
@@ -53,7 +53,7 @@ class IdleAnalyzerModule(AnalyzerModule):
 
         return df
 
-    @requires_events
+    @requires_events()
     def get_cpu_wakeup_events(self):
         """TODO doc"""
         sr = pd.Series()
