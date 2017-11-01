@@ -13,7 +13,7 @@
 # limitations under the License.
 #
 
-from millhouse.analyzer_modules.idle import IdleAnalyzerModule
+from millhouse.analyzer_module.idle import IdleAnalyzerModule
 
 class TraceAnalyzer(object):
     """TODO document"""
