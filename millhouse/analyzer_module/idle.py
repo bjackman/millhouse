@@ -15,27 +15,13 @@
 
 import numpy as np
 import pandas as pd
-from wrapt import decorator
 
 from millhouse import MissingTraceEventsError
+from millhouse.analyzer_module import requires_events
+
 #
 # TODO move the following into common module
 #
-
-def requires_events(events=None):
-    # TODO add testcase with an assertRaises
-    """TODO doc"""
-    @decorator
-    def wrapper(wrapped_method, instance, args, kwargs):
-        if events is None:
-            events = instances.required_events
-
-        missing_events = set(events) - set(instance.analyzer.available_events)
-        if missing_events:
-            raise MissingTraceEventsError(missing_events)
-        return wrapped(*args, **kwargs)
-
-    return wrapper
 
 def drop_consecutive_duplicates(df):
     """TODO doc"""
