@@ -52,12 +52,9 @@ class TestIdle(TestCase):
           <idle>-0     [003]   519.023045: cpu_idle:             state=2 cpu_id=3
           <idle>-0     [004]   519.023080: cpu_idle:             state=1 cpu_id=4
         """)
-        print ftrace.cpu_idle.data_frame.head()
 
         analyzer = TraceAnalyzer(ftrace)
         df = analyzer.idle.get_cpu_wakeup_events()
-
-        print df
 
         exp_index=[519.021928, 519.022641, 519.022642, 519.022643, 519.022867]
         exp_cpus= [         4,          4,          1,          2,          3]

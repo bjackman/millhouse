@@ -62,10 +62,5 @@ class IdleAnalyzerModule(AnalyzerModule):
             cpu_sr = drop_dupes(state_df[cpu].dropna())
             cpu_sr = cpu_sr[cpu_sr == -1].replace(-1, cpu)
             sr = sr.append(cpu_sr)
-            print
-            print cpu
-            print cpu_sr
-            print sr
-            print
         return pd.DataFrame({'cpu': sr}).sort_index()
 
