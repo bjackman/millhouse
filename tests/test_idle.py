@@ -15,30 +15,11 @@
 # limitations under the License.
 #
 
-import os
-from shutil import rmtree
-from tempfile import mkdtemp
-from unittest import TestCase
-
-from trappy import FTrace
+from test_base import MillhouseTestBase
 
 from millhouse.trace_analyzer import TraceAnalyzer
 
-class TestIdle(TestCase):
-    def setUp(self):
-        self.test_dir = mkdtemp()
-
-    def tearDown(self):
-        rmtree(self.test_dir)
-
-    def make_ftrace(self, in_data):
-        filename = 'trace_{}.txt'.format(self.id())
-        path = os.path.join(self.test_dir, filename)
-        with open(path, 'w') as f:
-            f.write(in_data)
-
-        return FTrace(path, scope='custom', events=['cpu_idle'], normalize_time=False)
-
+class TestIdle(MillhouseTestBase):
     def test_cpu_wakeups(self):
         ftrace = self.make_ftrace("""
           <idle>-0     [004]   519.021928: cpu_idle:             state=4294967295 cpu_id=4
