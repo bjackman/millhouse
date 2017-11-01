@@ -31,6 +31,7 @@ drop_dupes = drop_consecutive_duplicates
 
 class IdleAnalyzerModule(AnalyzerModule):
     required_events = ['cpu_idle']
+
     def __init__(self, *args, **kwargs):
         super(IdleAnalyzerModule, self).__init__(*args, **kwargs)
         self.has_events = 'cpu_idle' in self.analyzer.available_events
