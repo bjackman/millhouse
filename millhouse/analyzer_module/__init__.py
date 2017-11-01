@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+import numpy as np
+
 from wrapt import decorator
 
 def requires_events(events=None):
@@ -34,4 +37,10 @@ class AnalyzerModule(object):
         self.analyzer = analyzer
         self.ftrace = self.analyzer.ftrace
         self.cpus = analyzer.cpus
+
+    def _add_cpu_columns(self, df):
+        for cpu in self.cpus:
+            if cpu not in df.columns:
+                df[cpu] = np.nan
+        return df.sort_index(axis=1) # Sort column labels
 

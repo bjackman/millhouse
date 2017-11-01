@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 
-import numpy as np
 import pandas as pd
 
 from millhouse import MissingTraceEventsError
@@ -37,21 +36,13 @@ class IdleAnalyzerModule(AnalyzerModule):
 
     # TODO should it be analyzer.idle.signal.cpu_idle_state?
     # Current is        analyzer.idle.get_cpu_idle_state_signal
-    # TODO Make this aututomatically return a column for all CPUs if we know
-    #      what the CPUs were
     @requires_events()
     def get_cpu_idle_state_signal(self):
         """TODO doc"""
         df = self.ftrace.cpu_idle.data_frame
         df = df.pivot(columns='cpu_id')['state'].ffill()
 
-        # TODO make this common
-        for cpu in self.cpus:
-            if cpu not in df.columns:
-                df[cpu] = np.nan
-        df = df.sort_index(axis=1) # Sort column labels
-
-        return df
+        return self._add_cpu_columns(df)
 
     @requires_events()
     def get_cpu_wakeup_events(self):
