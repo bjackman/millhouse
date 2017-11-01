@@ -17,14 +17,10 @@ import numpy as np
 import pandas as pd
 from wrapt import decorator
 
+from millhouse import MissingTraceEventsError
 #
 # TODO move the following into common module
 #
-
-class MissingTraceEventsError(Exception):
-    def __init__(self, events, *args, **kwargs):
-        super(MissingTraceEventsError, self).__init__(
-            'Missing trace events {}'.format(events), *args, **kwargs)
 
 def requires_events(events=None):
     # TODO add testcase with an assertRaises

@@ -13,4 +13,8 @@
 # limitations under the License.
 #
 
-from millhouse.exception import MissingTraceEventsError
+
+class MissingTraceEventsError(Exception):
+    def __init__(self, events, *args, **kwargs):
+        super(MissingTraceEventsError, self).__init__(
+            'Missing trace events {}'.format(events), *args, **kwargs)
