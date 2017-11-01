@@ -34,7 +34,6 @@ class IdleAnalyzerModule(AnalyzerModule):
 
     def __init__(self, *args, **kwargs):
         super(IdleAnalyzerModule, self).__init__(*args, **kwargs)
-        self.has_events = 'cpu_idle' in self.analyzer.available_events
 
     # TODO should it be analyzer.idle.signal.cpu_idle_state?
     # Current is        analyzer.idle.get_cpu_idle_state_signal
