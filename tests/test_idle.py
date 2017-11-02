@@ -69,3 +69,26 @@ class TestIdle(MillhouseTestBase):
         self.assertListEqual(df['active'].tolist(), exp_states)
 
 
+    def test_cluster_active_single(self):
+        ftrace = self.make_ftrace("""
+          <idle>-0     [000]   100.000000: cpu_idle:             state=4294967295 cpu_id=0
+          <idle>-0     [001]   101.000000: cpu_idle:             state=4294967295 cpu_id=1
+          <idle>-0     [002]   102.000000: cpu_idle:             state=4294967295 cpu_id=2
+          <idle>-0     [003]   103.000000: cpu_idle:             state=4294967295 cpu_id=3
+          <idle>-0     [004]   104.000000: cpu_idle:             state=4294967295 cpu_id=4
+          <idle>-0     [000]   600.000000: cpu_idle:             state=0 cpu_id=0
+          <idle>-0     [001]   601.000000: cpu_idle:             state=0 cpu_id=1
+          <idle>-0     [002]   602.000000: cpu_idle:             state=0 cpu_id=2
+          <idle>-0     [003]   603.000000: cpu_idle:             state=0 cpu_id=3
+          <idle>-0     [004]   604.000000: cpu_idle:             state=0 cpu_id=4
+        """)
+
+        analyzer = TraceAnalyzer(ftrace)
+        df = drop_dupes(analyzer.idle.signal.cluster_active([0]))
+        df = df.dropna()
+
+        exp_index = [  100., 600.]
+        exp_states = [    1,    0]
+        self.assertListEqual(df.index.tolist(), exp_index)
+        self.assertListEqual(df['active'].tolist(), exp_states)
+
