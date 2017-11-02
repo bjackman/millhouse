@@ -17,6 +17,8 @@ import numpy as np
 
 from wrapt import decorator
 
+from millhouse import MissingTraceEventsError
+
 def requires_events(events=None):
     @decorator
     def wrapper(wrapped, instance, args, kwargs):

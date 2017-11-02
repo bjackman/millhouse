@@ -17,4 +17,4 @@
 class MissingTraceEventsError(Exception):
     def __init__(self, events, *args, **kwargs):
         super(MissingTraceEventsError, self).__init__(
-            'Missing trace events {}'.format(events), *args, **kwargs)
+            'Missing trace events {}'.format(list(events)), *args, **kwargs)
