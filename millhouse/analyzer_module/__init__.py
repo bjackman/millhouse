@@ -26,7 +26,7 @@ def requires_events(events=None):
         # TODO add testcase with an assertRaises
         _events = events or instance.required_events
 
-        missing_events = set(_events) - set(instance.analyzer.available_events)
+        missing_events = set(_events) - set(instance.available_events)
         if missing_events:
             raise MissingTraceEventsError(missing_events)
 
@@ -63,6 +63,8 @@ class AnalyzerModule(object):
         self.event = DfgRegister('{}.event'.format(self.__class__.__name__))
         self.signal = DfgRegister('{}.signal'.format(self.__class__.__name__))
         self.stats = DfgRegister('{}.stats'.format(self.__class__.__name__))
+
+        self.available_events = self.analyzer.available_events
 
         # Set up registers to provide nice accessor code. E.g.
         # You can access `self._dfg_signal_cpu_idle_state` as
