@@ -62,8 +62,6 @@ class TestIdle(MillhouseTestBase):
         self.assertTrue(np.isnan(df['active'].iloc[0]))
         df = df.dropna()
 
-        print df
-
         exp_index = [519.022641, 519.022831]
         exp_states = [        1,          0]
 
