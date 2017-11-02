@@ -35,7 +35,7 @@ class TestIdle(MillhouseTestBase):
         """)
 
         analyzer = TraceAnalyzer(ftrace)
-        df = analyzer.idle.get_cpu_wakeup_events()
+        df = analyzer.idle.event.cpu_wakeup()
 
         exp_index=[519.021928, 519.022641, 519.022642, 519.022643, 519.022867]
         exp_cpus= [         4,          4,          1,          2,          3]

@@ -33,12 +33,59 @@ def requires_events(events=None):
         return wrapped(*args, **kwargs)
     return wrapper
 
+class DfgRegister(object):
+    # This class doesn't really do anything except act as an object to hang
+    # attributes off, and also provides a more helpful error message for
+    # AttributeErrors.
+    def __init__(self, name):
+        self.name = name
+        self.getters = []
+
+    def add_getter(self, name, val):
+        self.getters.append(name)
+        setattr(self, name, val)
+
+    def __getattr__(self, name):
+        try:
+            return super(DfgRegister, self).__getattr__(name)
+        except AttributeError:
+            raise AttributeError(
+                "{} doesn't have a DataFrame accessor named '{}' "
+                "Available are: {}".format(self.name, name, self.getters))
+
 class AnalyzerModule(object):
     """TODO doc"""
     def __init__(self, analyzer):
         self.analyzer = analyzer
         self.ftrace = self.analyzer.ftrace
         self.cpus = analyzer.cpus
+
+        self.event = DfgRegister('{}.event'.format(self.__class__.__name__))
+        self.signal = DfgRegister('{}.signal'.format(self.__class__.__name__))
+        self.stats = DfgRegister('{}.stats'.format(self.__class__.__name__))
+
+        # Set up registers to provide nice accessor code. E.g.
+        # You can access `self._dfg_signal_cpu_idle_state` as
+        # `self.signal.cpu_idle_state`
+        for attr in dir(self):
+            if not attr.startswith('_dfg_'):
+                continue
+
+            registers = {
+                '_dfg_signal_': self.signal,
+                '_dfg_event_': self.event,
+                '_dfg_stats_': self.stats
+            }
+            for prefix, _register in registers.iteritems():
+                if attr.startswith(prefix):
+                    register = _register
+                    break
+            else:
+                raise ValueError('Attribute {} of {} must start with one of {}'
+                                 .format(attr, self.__class__, registers.keys()))
+
+            name = attr[len(prefix):]
+            register.add_getter(name, getattr(self, attr))
 
     def _add_cpu_columns(self, df):
         for cpu in self.cpus:

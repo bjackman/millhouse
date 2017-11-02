@@ -37,7 +37,7 @@ class IdleAnalyzerModule(AnalyzerModule):
     # TODO should it be analyzer.idle.signal.cpu_idle_state?
     # Current is        analyzer.idle.get_cpu_idle_state_signal
     @requires_events()
-    def get_cpu_idle_state_signal(self):
+    def _dfg_signal_cpu_idle_state(self):
         """TODO doc"""
         df = self.ftrace.cpu_idle.data_frame
         df = df.pivot(columns='cpu_id')['state'].ffill()
@@ -45,10 +45,10 @@ class IdleAnalyzerModule(AnalyzerModule):
         return self._add_cpu_columns(df)
 
     @requires_events()
-    def get_cpu_wakeup_events(self):
+    def _dfg_event_cpu_wakeup(self):
         """TODO doc"""
         sr = pd.Series()
-        state_df = self.get_cpu_idle_state_signal()
+        state_df = self.signal.cpu_idle_state()
         for cpu in self.cpus:
             cpu_sr = drop_dupes(state_df[cpu].dropna())
             cpu_sr = cpu_sr[cpu_sr == -1].replace(-1, cpu)
