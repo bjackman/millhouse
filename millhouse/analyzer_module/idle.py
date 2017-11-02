@@ -35,6 +35,22 @@ class IdleAnalyzerModule(AnalyzerModule):
 
         return self._add_cpu_columns(df)
 
+    def _dfg_signal_cpu_active(self):
+        """TODO doc, test"""
+        df = self.signal.cpu_idle_state()
+        df[~df.isnull()] = (df == -1)
+        return df
+
+    def _dfg_signal_cluster_active(self, cluster):
+        df = self.signal.cpu_active()[cluster]
+
+        # Cluster active is the OR between the actives on each CPU
+        # belonging to that specific cluster
+        df = df.sum(axis=1)
+        df[~df.isnull()] = df.astype(bool)
+
+        return pd.DataFrame({'active': df})
+
     @requires_events()
     def _dfg_event_cpu_wakeup(self):
         """TODO doc"""
