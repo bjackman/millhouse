@@ -35,5 +35,7 @@ class MillhouseTestBase(TestCase):
         with open(path, 'w') as f:
             f.write(in_data)
 
-        return FTrace(path, scope='custom', events=['cpu_idle'], normalize_time=False)
+        return FTrace(path, scope='custom',
+                      events=['cpu_idle', 'cpu_frequency'],
+                      normalize_time=False)
 
