@@ -126,3 +126,71 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         df = (self.ftrace.cpu_frequency.data_frame
               .pivot(columns='cpu')['frequency'].ffill())
         return self._add_cpu_columns(df)
+
+    def _dfg_stats_frequency_residency(self):
+        return self._get_freq_residency(0)
+
+    @requires_events(['cpu_idle', 'cpu_frequency'])
+    def _get_freq_residency(self, cluster):
+        """
+        Get a DataFrame with per cluster frequency residency, i.e. amount of
+        time spent at a given frequency in each cluster.
+
+        :param cluster: this can be either a single CPU ID or a list of CPU IDs
+            belonging to a cluster
+        :type cluster: int or list(int)
+
+        :returns: namedtuple(ResidencyTime) - tuple of total and active time
+            dataframes
+        """
+
+        _cluster = listify(cluster)
+
+        freq_df = self.ftrace.cpu_frequency.data_frame
+
+        # TODO: LISA checks coherency here
+
+        cluster_freqs = freq_df[freq_df.cpu == _cluster[0]]
+
+        # Compute TOTAL Time
+        time_intervals = cluster_freqs.index[1:] - cluster_freqs.index[:-1]
+        total_time = pd.DataFrame({
+            'time': time_intervals,
+            # TODO: LISA divides f by 1000.0, I dunno why
+            'frequency': [f for f in cluster_freqs.iloc[:-1].frequency]
+        })
+        total_time = total_time.groupby(['frequency']).sum()
+
+        print _cluster
+        # Compute ACTIVE Time
+        cluster_active = self.analyzer.idle.signal.cluster_active(_cluster)
+        print cluster_active
+
+        # In order to compute the active time spent at each frequency we
+        # multiply 2 square waves:
+        # - cluster_active, a square wave of the form:
+        #     cluster_active[t] == 1 if at least one CPU is reported to be
+        #                            non-idle by CPUFreq at time t
+        #     cluster_active[t] == 0 otherwise
+        # - freq_active, square wave of the form:
+        #     freq_active[t] == 1 if at time t the frequency is f
+        #     freq_active[t] == 0 otherwise
+        available_freqs = sorted(cluster_freqs.frequency.unique())
+        cluster_freqs = cluster_freqs.join(
+            cluster_active, how='outer')
+        cluster_freqs.fillna(method='ffill', inplace=True)
+        nonidle_time = []
+        for f in available_freqs:
+            freq_active = cluster_freqs['frequency'] == f
+
+            active_t = cluster_freqs.active * freq_active
+            print active_t
+            # Compute total time by integrating the square wave
+            nonidle_time.append(integrate_square_wave(active_t))
+
+        active_time = pd.DataFrame({'time': nonidle_time},
+                                   # TODO: LISA divides f by 1000.0, I dunno why
+                                   index=[f for f in available_freqs])
+        active_time.index.name = 'frequency'
+
+        return pd.concat([total_time, active_time], keys=['total', 'active'])
