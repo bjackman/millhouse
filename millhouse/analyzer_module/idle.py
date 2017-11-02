@@ -17,16 +17,7 @@ import pandas as pd
 
 from millhouse import MissingTraceEventsError
 from millhouse.analyzer_module import requires_events, AnalyzerModule
-
-#
-# TODO move the following into common module
-#
-
-def drop_consecutive_duplicates(df):
-    """TODO doc"""
-    return df[df.shift() != df]
-
-drop_dupes = drop_consecutive_duplicates
+from millhouse.utils import drop_consecutive_duplicates as drop_dupes
 
 class IdleAnalyzerModule(AnalyzerModule):
     required_events = ['cpu_idle']
