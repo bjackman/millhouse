@@ -1,2 +1,3 @@
 *.pyc
 .*.cache/
+millhouse.egg-info/
