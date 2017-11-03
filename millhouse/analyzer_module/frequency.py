@@ -193,4 +193,6 @@ class FrequencyAnalyzerModule(AnalyzerModule):
                                    index=[f for f in available_freqs])
         active_time.index.name = 'frequency'
 
-        return pd.concat([total_time, active_time], keys=['total', 'active'])
+        return pd.concat([total_time['time'], active_time['time']],
+                         keys=['total', 'active'],
+                         axis=1)
