@@ -36,6 +36,6 @@ class MillhouseTestBase(TestCase):
             f.write(in_data)
 
         return FTrace(path, scope='custom',
-                      events=['cpu_idle', 'cpu_frequency'],
+                      events=['cpu_idle', 'cpu_frequency', 'cpu_frequency_devlib'],
                       normalize_time=False)
 

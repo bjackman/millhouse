@@ -19,36 +19,34 @@ from test_base import MillhouseTestBase
 from millhouse.trace_analyzer import TraceAnalyzer
 TEST_TRACE_DATA = """
           <idle>-0     [000]   100.000000: cpu_idle:             state=4294967295 cpu_id=0
-          <idle>-0     [001]   101.000000: cpu_idle:             state=4294967295 cpu_id=1
-          <idle>-0     [002]   102.000000: cpu_idle:             state=4294967295 cpu_id=2
-          <idle>-0     [003]   103.000000: cpu_idle:             state=4294967295 cpu_id=3
-          <idle>-0     [004]   104.000000: cpu_idle:             state=4294967295 cpu_id=4
-          <idle>-0     [004]   519.000000: cpu_frequency:             state=100000 cpu_id=0
-          <idle>-0     [004]   519.000000: cpu_frequency:             state=100000 cpu_id=1
-          <idle>-0     [001]   519.000000: cpu_frequency:             state=100000 cpu_id=2
-          <idle>-0     [002]   519.000000: cpu_frequency:             state=100000 cpu_id=3
-          <idle>-0     [001]   559.000000: cpu_frequency:             state=200000 cpu_id=0
-          <idle>-0     [002]   559.000000: cpu_frequency:             state=200000 cpu_id=1
-          <idle>-0     [003]   559.000000: cpu_frequency:             state=200000 cpu_id=2
-          <idle>-0     [003]   559.000000: cpu_frequency:             state=200000 cpu_id=3
+          <idle>-0     [001]   100.000000: cpu_idle:             state=4294967295 cpu_id=1
+          <idle>-0     [002]   100.000000: cpu_idle:             state=4294967295 cpu_id=2
+          <idle>-0     [003]   100.000000: cpu_idle:             state=4294967295 cpu_id=3
+          <idle>-0     [003]   500.000000: cpu_frequency_devlib:      state=100000 cpu_id=0
+          <idle>-0     [003]   500.000000: cpu_frequency_devlib:      state=100000 cpu_id=1
+          <idle>-0     [001]   500.000000: cpu_frequency_devlib:      state=100000 cpu_id=2
+          <idle>-0     [002]   500.000000: cpu_frequency_devlib:      state=100000 cpu_id=3
+          <idle>-0     [001]   550.000000: cpu_frequency:             state=200000 cpu_id=0
+          <idle>-0     [002]   550.000000: cpu_frequency:             state=200000 cpu_id=1
+          <idle>-0     [003]   550.000000: cpu_frequency:             state=200000 cpu_id=2
+          <idle>-0     [003]   550.000000: cpu_frequency:             state=200000 cpu_id=3
           <idle>-0     [000]   600.000000: cpu_idle:             state=0 cpu_id=0
-          <idle>-0     [001]   601.000000: cpu_idle:             state=0 cpu_id=1
-          <idle>-0     [002]   602.000000: cpu_idle:             state=0 cpu_id=2
-          <idle>-0     [003]   603.000000: cpu_idle:             state=0 cpu_id=3
-          <idle>-0     [004]   604.000000: cpu_idle:             state=0 cpu_id=4
-          <idle>-0     [001]   719.000000: cpu_frequency:             state=300000 cpu_id=0
-          <idle>-0     [002]   719.000000: cpu_frequency:             state=300000 cpu_id=1
-          <idle>-0     [003]   719.000000: cpu_frequency:             state=300000 cpu_id=2
-          <idle>-0     [003]   719.000000: cpu_frequency:             state=300000 cpu_id=3
+          <idle>-0     [001]   600.000000: cpu_idle:             state=0 cpu_id=1
+          <idle>-0     [002]   600.000000: cpu_idle:             state=0 cpu_id=2
+          <idle>-0     [003]   600.000000: cpu_idle:             state=0 cpu_id=3
+          <idle>-0     [001]   700.000000: cpu_frequency:             state=300000 cpu_id=0
+          <idle>-0     [002]   700.000000: cpu_frequency:             state=300000 cpu_id=1
+          <idle>-0     [003]   700.000000: cpu_frequency:             state=300000 cpu_id=2
+          <idle>-0     [003]   700.000000: cpu_frequency:             state=300000 cpu_id=3
           <idle>-0     [000]   800.000000: cpu_idle:             state=4294967295 cpu_id=0
-          <idle>-0     [001]   801.000000: cpu_idle:             state=4294967295 cpu_id=1
-          <idle>-0     [002]   802.000000: cpu_idle:             state=4294967295 cpu_id=2
-          <idle>-0     [003]   803.000000: cpu_idle:             state=4294967295 cpu_id=3
-          <idle>-0     [004]   804.000000: cpu_idle:             state=4294967295 cpu_id=4
-          <idle>-0     [001]   919.000000: cpu_frequency:             state=400000 cpu_id=0
-          <idle>-0     [002]   919.000000: cpu_frequency:             state=400000 cpu_id=1
-          <idle>-0     [003]   919.000000: cpu_frequency:             state=400000 cpu_id=2
-          <idle>-0     [003]   919.000000: cpu_frequency:             state=400000 cpu_id=3
+          <idle>-0     [001]   800.000000: cpu_idle:             state=4294967295 cpu_id=1
+          <idle>-0     [002]   800.000000: cpu_idle:             state=4294967295 cpu_id=2
+          <idle>-0     [003]   800.000000: cpu_idle:             state=4294967295 cpu_id=3
+          <idle>-0     [001]   900.000000: cpu_frequency:             state=400000 cpu_id=0
+          <idle>-0     [002]   900.000000: cpu_frequency:             state=400000 cpu_id=1
+          <idle>-0     [003]   900.000000: cpu_frequency:             state=400000 cpu_id=2
+          <idle>-0     [003]   900.000000: cpu_frequency:             state=400000 cpu_id=3
+          <idle>-0     [000]   950.000000: cpu_idle:             state=4294967295 cpu_id=0
 """
 class TestFrequency(MillhouseTestBase):
     def test_cpu_frequency_signal(self):
@@ -57,13 +55,17 @@ class TestFrequency(MillhouseTestBase):
         df = analyzer.frequency.signal.cpu_frequency()
         self.assertEqual(df.columns.tolist(), analyzer.cpus)
 
-    # TODO test devlib events
-    #           cluster coherency check
+    # TODO test cluster coherency check
 
     def test_freq_residency(self):
         ftrace = self.make_ftrace(TEST_TRACE_DATA)
-        analyzer = TraceAnalyzer(ftrace)
+        analyzer = TraceAnalyzer(ftrace,
+                                 frequency_domains=[[0, 1], [2, 3]])
 
         df = analyzer.frequency.stats.frequency_residency()
+
         print df
-        # TODO test actual values
+        self.assertEqual(df.columns.tolist(), ['active', 'total'])
+        self.assertEqual(df.index.tolist(), [100000, 200000, 300000, 400000])
+        self.assertFalse(df.isnull().any().any())
+
