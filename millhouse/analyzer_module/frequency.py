@@ -158,20 +158,11 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         freq_df = self.ftrace.cpu_frequency.data_frame
         group_freqs = freq_df[freq_df.cpu == _group[0]]
 
-        # Compute TOTAL Time
-        time_intervals = group_freqs.index[1:] - group_freqs.index[:-1]
-        total_time = pd.DataFrame({
-            'time': time_intervals,
-            # TODO: LISA divides f by 1000.0, I dunno why
-            'frequency': [f for f in group_freqs.iloc[:-1].frequency]
-        })
-        total_time = total_time.groupby(['frequency']).sum()
-
-        # Compute ACTIVE Time
         group_active = self.analyzer.idle.signal.cluster_active(_group)
 
         # In order to compute the active time spent at each frequency we
         # multiply 2 square waves:
+        #
         # - cluster_active, a square wave of the form:
         #     cluster_active[t] == 1 if at least one CPU is reported to be
         #                            non-idle by CPUFreq at time t
@@ -179,23 +170,24 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         # - freq_active, square wave of the form:
         #     freq_active[t] == 1 if at time t the frequency is f
         #     freq_active[t] == 0 otherwise
+        #
+        # For the total time, we just treat the active signal as always-1
+
         available_freqs = sorted(group_freqs.frequency.unique())
         group_freqs = group_freqs.join(
             group_active, how='outer')
         group_freqs.fillna(method='ffill', inplace=True)
+        total_time = []
         nonidle_time = []
         for f in available_freqs:
             freq_active = group_freqs['frequency'] == f
-
             active_t = group_freqs.active * freq_active
+
             # Compute total time by integrating the square wave
             nonidle_time.append(integrate_square_wave(active_t))
+            total_time.append(integrate_square_wave(freq_active))
 
-        active_time = pd.DataFrame({'time': nonidle_time},
-                                   # TODO: LISA divides f by 1000.0, I dunno why
-                                   index=[f for f in available_freqs])
-        active_time.index.name = 'frequency'
-
-        return pd.concat([total_time['time'], active_time['time']],
-                         keys=['total', 'active'],
-                         axis=1)
+        df = pd.DataFrame({'total': total_time, 'active': nonidle_time},
+                          index=[f for f in available_freqs])
+        df.index.name = 'frequency'
+        return df
