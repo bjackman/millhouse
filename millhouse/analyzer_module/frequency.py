@@ -31,7 +31,7 @@ class FrequencyAnalyzerModule(AnalyzerModule):
     def __init__(self, *args, **kwargs):
         super(FrequencyAnalyzerModule, self).__init__(*args, **kwargs)
 
-        self.freq_domains = None # TODO
+        self.freq_domains = self.analyzer.frequency_domains
         self.frequencies_coherent = None
         self.sanitize_trace_events()
 
@@ -46,7 +46,7 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         if self.freq_domains:
             df = self.analyzer.get_trace_event('cpu_frequency')
             self.frequencies_coherent = True
-            for _, cpus in self.freq_domains.iteritems():
+            for cpus in self.freq_domains:
                 domain_df = df[df.cpu.isin(cpus)]
                 for chunk in self._chunker(domain_df, len(cpus)):
                     f = chunk.iloc[0].frequency
@@ -111,7 +111,7 @@ class FrequencyAnalyzerModule(AnalyzerModule):
 
                 # Inject "final" devlib frequencies
                 os_df = df
-                dl_df = devlib_freq.iloc[self.platform['cpus_count']:]
+                dl_df = devlib_freq.iloc[len(self.cpus):]
                 for c in self.freq_domains:
                     dl_freqs = dl_df[dl_df.cpu.isin(c)]
                     os_freqs = os_df[os_df.cpu.isin(c)]
