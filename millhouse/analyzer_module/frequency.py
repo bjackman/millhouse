@@ -107,7 +107,6 @@ class FrequencyAnalyzerModule(AnalyzerModule):
                     # All devlib events "before" os-generated events
                     if os_freqs.empty or \
                     os_freqs.index.min() > dl_freqs.index.max():
-                        self._log.debug("Insert devlib freqs for %s", c)
                         df = pd.concat([dl_freqs, df])
 
                 # Inject "final" devlib frequencies
