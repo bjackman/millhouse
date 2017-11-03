@@ -31,28 +31,27 @@ class FrequencyAnalyzerModule(AnalyzerModule):
     def __init__(self, *args, **kwargs):
         super(FrequencyAnalyzerModule, self).__init__(*args, **kwargs)
 
-        self.clusters = None # TODO
-        self.clusters_freq_coherent = None
+        self.freq_domains = None # TODO
+        self.frequencies_coherent = None
         self.sanitize_trace_events()
 
     def sanitize_trace_events(self):
         """
-        Verify that all platform reported clusters are frequency coherent (i.e.
-        frequency scaling is performed at a cluster level).
+        Verify that all reported frequency domains are frequency coherent
         """
         if 'cpu_frequency_devlib' in self.available_events:
             self._inject_devlib_events()
 
         # Frequency Coherency Check
-        if self.clusters:
+        if self.freq_domains:
             df = self.analyzer.get_trace_event('cpu_frequency')
-            self.clusters_freq_coherent = True
-            for _, cpus in clusters.iteritems():
-                cluster_df = df[df.cpu.isin(cpus)]
-                for chunk in self._chunker(cluster_df, len(cpus)):
+            self.frequencies_coherent = True
+            for _, cpus in self.freq_domains.iteritems():
+                domain_df = df[df.cpu.isin(cpus)]
+                for chunk in self._chunker(domain_df, len(cpus)):
                     f = chunk.iloc[0].frequency
                     if any(chunk.frequency != f):
-                        self.clusters_freq_coherent = False
+                        self.frequencies_coherent = False
 
 
     def _chunker(self, seq, size):
@@ -69,6 +68,10 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         return (seq.iloc[pos:pos + size] for pos in range(0, len(seq), size))
 
     def _inject_devlib_events(self):
+        # TODO: We can only do this if we know the frequency domains.
+        if not self.freq_domains:
+            return None
+
         devlib_freq = self.analyzer.get_trace_event('cpu_frequency_devlib')
         devlib_freq.rename(columns={'cpu_id':'cpu'}, inplace=True)
         devlib_freq.rename(columns={'state':'frequency'}, inplace=True)
@@ -89,16 +92,16 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         else:
             if len(devlib_freq) > 0:
 
-                # Frequencies injection is done in a per-cluster based.
-                # This is based on the assumption that clusters are
+                # Frequencies injection is done on a per-domain basis.
+                # This is based on the assumption that domains are
                 # frequency choerent.
-                # For each cluster we inject devlib events only if
-                # these events does not overlaps with os-generated ones.
+                # For each domain we inject devlib events only if
+                # these events do not overlaps with OS-generated ones.
 
                 # Inject "initial" devlib frequencies
                 os_df = df
-                dl_df = devlib_freq.iloc[:self.platform['cpus_count']]
-                for _,c in self.platform['clusters'].iteritems():
+                dl_df = devlib_freq.iloc[:len(self.cpus)]
+                for c in self.freq_domains:
                     dl_freqs = dl_df[dl_df.cpu.isin(c)]
                     os_freqs = os_df[os_df.cpu.isin(c)]
                     # All devlib events "before" os-generated events
@@ -110,7 +113,7 @@ class FrequencyAnalyzerModule(AnalyzerModule):
                 # Inject "final" devlib frequencies
                 os_df = df
                 dl_df = devlib_freq.iloc[self.platform['cpus_count']:]
-                for _,c in self.platform['clusters'].iteritems():
+                for c in self.freq_domains:
                     dl_freqs = dl_df[dl_df.cpu.isin(c)]
                     os_freqs = os_df[os_df.cpu.isin(c)]
                     # All devlib events "after" os-generated events
@@ -133,39 +136,39 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         return self._get_freq_residency(0)
 
     @requires_events(['cpu_idle', 'cpu_frequency'])
-    def _get_freq_residency(self, cluster):
+    def _get_freq_residency(self, core_group):
         """
-        Get a DataFrame with per cluster frequency residency, i.e. amount of
-        time spent at a given frequency in each cluster.
+        Get a DataFrame with per core-group frequency residency, i.e. amount of
+        time spent at a given frequency in each group.
 
-        :param cluster: this can be either a single CPU ID or a list of CPU IDs
-            belonging to a cluster
-        :type cluster: int or list(int)
+        :param core_group: this can be either a single CPU ID or a list of CPU IDs
+            belonging to a group
+        :type group: int or list(int)
 
         :returns: namedtuple(ResidencyTime) - tuple of total and active time
             dataframes
         """
 
-        _cluster = listify(cluster)
+        _group = listify(core_group)
 
-        if len(_cluster) > 1 and not self.clusters_freq_coherent:
-            raise ValueError('Cluster frequency is NOT coherent, '
+        if len(_group) > 1 and not self.frequencies_coherent:
+            raise ValueError('Frequency is NOT domain-coherent, '
                              'cannot compute residency!')
 
         freq_df = self.ftrace.cpu_frequency.data_frame
-        cluster_freqs = freq_df[freq_df.cpu == _cluster[0]]
+        group_freqs = freq_df[freq_df.cpu == _group[0]]
 
         # Compute TOTAL Time
-        time_intervals = cluster_freqs.index[1:] - cluster_freqs.index[:-1]
+        time_intervals = group_freqs.index[1:] - group_freqs.index[:-1]
         total_time = pd.DataFrame({
             'time': time_intervals,
             # TODO: LISA divides f by 1000.0, I dunno why
-            'frequency': [f for f in cluster_freqs.iloc[:-1].frequency]
+            'frequency': [f for f in group_freqs.iloc[:-1].frequency]
         })
         total_time = total_time.groupby(['frequency']).sum()
 
         # Compute ACTIVE Time
-        cluster_active = self.analyzer.idle.signal.cluster_active(_cluster)
+        group_active = self.analyzer.idle.signal.cluster_active(_group)
 
         # In order to compute the active time spent at each frequency we
         # multiply 2 square waves:
@@ -176,15 +179,15 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         # - freq_active, square wave of the form:
         #     freq_active[t] == 1 if at time t the frequency is f
         #     freq_active[t] == 0 otherwise
-        available_freqs = sorted(cluster_freqs.frequency.unique())
-        cluster_freqs = cluster_freqs.join(
-            cluster_active, how='outer')
-        cluster_freqs.fillna(method='ffill', inplace=True)
+        available_freqs = sorted(group_freqs.frequency.unique())
+        group_freqs = group_freqs.join(
+            group_active, how='outer')
+        group_freqs.fillna(method='ffill', inplace=True)
         nonidle_time = []
         for f in available_freqs:
-            freq_active = cluster_freqs['frequency'] == f
+            freq_active = group_freqs['frequency'] == f
 
-            active_t = cluster_freqs.active * freq_active
+            active_t = group_freqs.active * freq_active
             # Compute total time by integrating the square wave
             nonidle_time.append(integrate_square_wave(active_t))
 
