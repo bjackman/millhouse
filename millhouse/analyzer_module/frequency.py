@@ -18,7 +18,7 @@ import pandas as pd
 
 from trappy.utils import listify
 
-from millhouse import MissingTraceEventsError
+from millhouse.exception import MissingTraceEventsError
 from millhouse.analyzer_module import requires_events, AnalyzerModule
 
 def integrate_square_wave(series):

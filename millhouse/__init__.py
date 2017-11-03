@@ -13,4 +13,6 @@
 # limitations under the License.
 #
 
+from millhouse.trace_analyzer import TraceAnalyzer
+
 from millhouse.exception import MissingTraceEventsError
