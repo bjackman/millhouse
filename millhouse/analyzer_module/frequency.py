@@ -164,10 +164,8 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         })
         total_time = total_time.groupby(['frequency']).sum()
 
-        print _cluster
         # Compute ACTIVE Time
         cluster_active = self.analyzer.idle.signal.cluster_active(_cluster)
-        print cluster_active
 
         # In order to compute the active time spent at each frequency we
         # multiply 2 square waves:
@@ -187,7 +185,6 @@ class FrequencyAnalyzerModule(AnalyzerModule):
             freq_active = cluster_freqs['frequency'] == f
 
             active_t = cluster_freqs.active * freq_active
-            print active_t
             # Compute total time by integrating the square wave
             nonidle_time.append(integrate_square_wave(active_t))
 
