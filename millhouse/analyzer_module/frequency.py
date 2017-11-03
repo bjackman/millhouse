@@ -133,7 +133,12 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         return self._add_cpu_columns(self._extrude_signal(df))
 
     def _dfg_stats_frequency_residency(self):
-        return self._get_freq_residency(0)
+        # If we don't have frequency domain data, just treat each CPU
+        # individually.
+        domains = self.freq_domains or [[c] for c in self.cpus]
+        return pd.concat(
+            [self._get_freq_residency(d) for d in domains],
+            keys=[d[0] for d in domains], axis=1)
 
     @requires_events(['cpu_idle', 'cpu_frequency'])
     def _get_freq_residency(self, core_group):

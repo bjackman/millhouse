@@ -65,7 +65,8 @@ class TestFrequency(MillhouseTestBase):
         df = analyzer.frequency.stats.frequency_residency()
 
         print df
-        self.assertEqual(df.columns.tolist(), ['active', 'total'])
+        self.assertEqual(df.columns.tolist(), [(0, 'active'), (0, 'total'),
+                                               (2, 'active'), (2, 'total')])
         self.assertEqual(df.index.tolist(), [100000, 200000, 300000, 400000])
         self.assertFalse(df.isnull().any().any())
 
