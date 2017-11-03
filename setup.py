@@ -22,7 +22,7 @@ REQUIRES = [
 LONG_DESCRIPTION = "todo"
 
 setup(name='millhouse',
-      version=__version__,
+      version='0.0.1',
       description='todo',
       long_description=LONG_DESCRIPTION,
       author='ARM-MILLHOUSE',
