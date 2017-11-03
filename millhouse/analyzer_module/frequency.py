@@ -46,12 +46,14 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         # Frequency Coherency Check
         if self.clusters:
             df = self.analyzer.get_trace_event('cpu_frequency')
+            self.clusters_freq_coherent = True
             for _, cpus in clusters.iteritems():
                 cluster_df = df[df.cpu.isin(cpus)]
                 for chunk in self._chunker(cluster_df, len(cpus)):
                     f = chunk.iloc[0].frequency
                     if any(chunk.frequency != f):
-                        self.freq_coherency = False
+                        self.clusters_freq_coherent = False
+
 
     def _chunker(self, seq, size):
         """
@@ -146,10 +148,11 @@ class FrequencyAnalyzerModule(AnalyzerModule):
 
         _cluster = listify(cluster)
 
+        if len(_cluster) > 1 and not self.clusters_freq_coherent:
+            raise ValueError('Cluster frequency is NOT coherent, '
+                             'cannot compute residency!')
+
         freq_df = self.ftrace.cpu_frequency.data_frame
-
-        # TODO: LISA checks coherency here
-
         cluster_freqs = freq_df[freq_df.cpu == _cluster[0]]
 
         # Compute TOTAL Time
