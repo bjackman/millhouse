@@ -31,7 +31,7 @@ class FrequencyAnalyzerModule(AnalyzerModule):
     def __init__(self, *args, **kwargs):
         super(FrequencyAnalyzerModule, self).__init__(*args, **kwargs)
 
-        self.freq_domains = self.analyzer.frequency_domains
+        self.freq_domains = self.analyzer.cpufreq_domains
         self.frequencies_coherent = None
         self.sanitize_trace_events()
 

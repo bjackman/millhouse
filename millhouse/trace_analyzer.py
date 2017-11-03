@@ -23,10 +23,10 @@ class TraceAnalyzer(object):
         # TODO raise proper error if event missing (and test it)
         return getattr(self.ftrace, event).data_frame
 
-    def __init__(self, ftrace, topology=None, frequency_domains=None):
+    def __init__(self, ftrace, topology=None, cpufreq_domains=None):
         self.ftrace = ftrace
         self.topology = topology
-        self.frequency_domains = frequency_domains
+        self.cpufreq_domains = cpufreq_domains
 
         # TODO: This is copied from LISA. This should really be solved in TRAPpy
         # and removed from both here and LISA.

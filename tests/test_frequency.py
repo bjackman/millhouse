@@ -60,7 +60,7 @@ class TestFrequency(MillhouseTestBase):
     def test_freq_residency(self):
         ftrace = self.make_ftrace(TEST_TRACE_DATA)
         analyzer = TraceAnalyzer(ftrace,
-                                 frequency_domains=[[0, 1], [2, 3]])
+                                 cpufreq_domains=[[0, 1], [2, 3]])
 
         df = analyzer.frequency.stats.frequency_residency()
 
