@@ -14,6 +14,7 @@
 #
 
 import numpy as np
+import pandas as pd
 
 from wrapt import decorator
 
@@ -89,9 +90,25 @@ class AnalyzerModule(object):
             name = attr[len(prefix):]
             register.add_getter(name, getattr(self, attr))
 
+        if self.ftrace.normalize_time:
+            self.trace_end_time = 0 + self.ftrace.get_duration()
+        else:
+            self.__trace_end_time = self.ftrace.basetime + self.ftrace.get_duration()
+
     def _add_cpu_columns(self, df):
         for cpu in self.cpus:
             if cpu not in df.columns:
                 df[cpu] = np.nan
         return df.sort_index(axis=1) # Sort column labels
 
+    def _extrude_signal(self, df):
+        """
+        Duplicate the last event of a signal DataFrame at the end of the trace
+
+        Where you have a DataFrame that represents a signal, and the last event
+        is not at the end of the trace (e.g. because your CPU frequency did not
+        change in the last 500ms of the trace), this can be used to 'extrude'
+        that signal up to the end of the trace so that it can be usefully
+        integrated.
+        """
+        return df.append(pd.Series(df.iloc[-1], name=self.__trace_end_time))

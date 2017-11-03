@@ -129,7 +129,8 @@ class FrequencyAnalyzerModule(AnalyzerModule):
         """TODO doc"""
         df = (self.ftrace.cpu_frequency.data_frame
               .pivot(columns='cpu')['frequency'].ffill())
-        return self._add_cpu_columns(df)
+
+        return self._add_cpu_columns(self._extrude_signal(df))
 
     def _dfg_stats_frequency_residency(self):
         return self._get_freq_residency(0)
