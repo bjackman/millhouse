@@ -25,11 +25,11 @@ def integrate_square_wave(series):
     values = series.values[:-1]
     return float((values * np.diff(series.index)).sum())
 
-class FrequencyAnalyzerModule(AnalyzerModule):
+class CpufreqAnalyzerModule(AnalyzerModule):
     required_events = ['cpu_frequency']
 
     def __init__(self, *args, **kwargs):
-        super(FrequencyAnalyzerModule, self).__init__(*args, **kwargs)
+        super(CpufreqAnalyzerModule, self).__init__(*args, **kwargs)
 
         self.freq_domains = self.analyzer.cpufreq_domains
         self.frequencies_coherent = None

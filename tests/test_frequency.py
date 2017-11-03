@@ -48,11 +48,11 @@ TEST_TRACE_DATA = """
           <idle>-0     [003]   900.000000: cpu_frequency:             state=400000 cpu_id=3
           <idle>-0     [000]   950.000000: cpu_idle:             state=4294967295 cpu_id=0
 """
-class TestFrequency(MillhouseTestBase):
+class TestCpufreq(MillhouseTestBase):
     def test_cpu_frequency_signal(self):
         ftrace = self.make_ftrace(TEST_TRACE_DATA)
         analyzer = TraceAnalyzer(ftrace)
-        df = analyzer.frequency.signal.cpu_frequency()
+        df = analyzer.cpufreq.signal.cpu_frequency()
         self.assertEqual(df.columns.tolist(), analyzer.cpus)
 
     # TODO test cluster coherency check
@@ -62,7 +62,7 @@ class TestFrequency(MillhouseTestBase):
         analyzer = TraceAnalyzer(ftrace,
                                  cpufreq_domains=[[0, 1], [2, 3]])
 
-        df = analyzer.frequency.stats.frequency_residency()
+        df = analyzer.cpufreq.stats.frequency_residency()
 
         print df
         self.assertEqual(df.columns.tolist(), [(0, 'active'), (0, 'total'),

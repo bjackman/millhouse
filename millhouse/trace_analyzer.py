@@ -14,7 +14,7 @@
 #
 
 from millhouse.analyzer_module.idle import IdleAnalyzerModule
-from millhouse.analyzer_module.frequency import FrequencyAnalyzerModule
+from millhouse.analyzer_module.cpufreq import CpufreqAnalyzerModule
 
 class TraceAnalyzer(object):
     """TODO document"""
@@ -46,4 +46,4 @@ class TraceAnalyzer(object):
         self.cpus = range(max_cpu + 1)
 
         self.idle = IdleAnalyzerModule(self)
-        self.frequency = FrequencyAnalyzerModule(self)
+        self.cpufreq = CpufreqAnalyzerModule(self)
