@@ -127,8 +127,8 @@ class CpufreqAnalyzerModule(AnalyzerModule):
     @requires_events()
     def _dfg_signal_cpu_frequency(self):
         """TODO doc"""
-        df = (self.ftrace.cpu_frequency.data_frame
-              .pivot(columns='cpu')['frequency'].ffill())
+        df = self._do_pivot(self.ftrace.cpu_frequency.data_frame,
+                            'cpu')['frequency'].ffill()
 
         return self._add_cpu_columns(self._extrude_signal(df))
 

@@ -95,6 +95,23 @@ class AnalyzerModule(object):
         else:
             self.__trace_end_time = self.ftrace.basetime + self.ftrace.get_duration()
 
+    def _do_pivot(self, df, columns):
+        """
+        Perform a DataFrame pivot, dealing with duplicate indices as necessary
+
+        If there are two rows in the DataFrame with the same index and the same
+        value in the column indicated by 'columns', Pandas raises 'ValueError:
+        Index contains duplicate entries, cannot reshape' due to the ambiguity
+        as to which value to take. This solves the issue by taking the _latest_
+        value (i.e. the one with the higher value in the __line column - this is
+        implemented by assuming that __line always increases with iloc).
+
+        See Pandas documentation for more detail.
+        """
+        return df.pivot_table(columns=columns, index='Time',
+                              aggfunc=lambda x: x.iloc[-1])
+
+
     def _add_cpu_columns(self, df):
         for cpu in self.cpus:
             if cpu not in df.columns:

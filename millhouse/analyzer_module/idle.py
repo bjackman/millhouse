@@ -30,8 +30,8 @@ class IdleAnalyzerModule(AnalyzerModule):
     @requires_events()
     def _dfg_signal_cpu_idle_state(self):
         """TODO doc"""
-        df = handle_duplicate_index(self.ftrace.cpu_idle.data_frame)
-        df = df.pivot(columns='cpu_id')['state'].ffill()
+        df = self._do_pivot(
+            self.ftrace.cpu_idle.data_frame, 'cpu_id')['state'].ffill()
 
         return self._add_cpu_columns(df)
 
