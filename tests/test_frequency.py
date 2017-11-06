@@ -65,8 +65,23 @@ class TestCpufreq(MillhouseTestBase):
         df = analyzer.cpufreq.stats.frequency_residency()
 
         print df
-        self.assertEqual(df.columns.tolist(), [(0, 'active'), (0, 'total'),
-                                               (2, 'active'), (2, 'total')])
-        self.assertEqual(df.index.tolist(), [100000, 200000, 300000, 400000])
-        self.assertFalse(df.isnull().any().any())
 
+        self.assertEqual(df[0]['active'][100000], 50)
+        self.assertEqual(df[2]['active'][100000], 50)
+        self.assertEqual(df[0][ 'total'][100000], 50)
+        self.assertEqual(df[2][ 'total'][100000], 50)
+
+        self.assertEqual(df[0]['active'][200000], 50)
+        self.assertEqual(df[2]['active'][200000], 50)
+        self.assertEqual(df[0][ 'total'][200000],150)
+        self.assertEqual(df[2][ 'total'][200000],150)
+
+        self.assertEqual(df[0]['active'][300000],100)
+        self.assertEqual(df[2]['active'][300000],100)
+        self.assertEqual(df[0][ 'total'][300000],200)
+        self.assertEqual(df[2][ 'total'][300000],200)
+
+        self.assertEqual(df[0]['active'][400000], 50)
+        self.assertEqual(df[2]['active'][400000], 50)
+        self.assertEqual(df[0][ 'total'][400000], 50)
+        self.assertEqual(df[2][ 'total'][400000], 50)
