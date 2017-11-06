@@ -15,6 +15,8 @@
 
 import pandas as pd
 
+from trappy.utils import handle_duplicate_index
+
 from millhouse.exception import MissingTraceEventsError
 from millhouse.analyzer_module import requires_events, AnalyzerModule
 from millhouse.utils import drop_consecutive_duplicates as drop_dupes
@@ -30,7 +32,7 @@ class IdleAnalyzerModule(AnalyzerModule):
     @requires_events()
     def _dfg_signal_cpu_idle_state(self):
         """TODO doc"""
-        df = self.ftrace.cpu_idle.data_frame
+        df = handle_duplicate_index(self.ftrace.cpu_idle.data_frame)
         df = df.pivot(columns='cpu_id')['state'].ffill()
 
         return self._add_cpu_columns(df)
