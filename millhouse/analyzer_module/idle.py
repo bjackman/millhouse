@@ -27,8 +27,6 @@ class IdleAnalyzerModule(AnalyzerModule):
     def __init__(self, *args, **kwargs):
         super(IdleAnalyzerModule, self).__init__(*args, **kwargs)
 
-    # TODO should it be analyzer.idle.signal.cpu_idle_state?
-    # Current is        analyzer.idle.get_cpu_idle_state_signal
     @requires_events()
     def _dfg_signal_cpu_idle_state(self):
         """TODO doc"""
