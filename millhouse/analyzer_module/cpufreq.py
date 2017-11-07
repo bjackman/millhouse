@@ -132,19 +132,14 @@ class CpufreqAnalyzerModule(AnalyzerModule):
 
         return self._add_cpu_columns(self._extrude_signal(df))
 
-    def _dfg_stats_frequency_residency(self):
-        # If we don't have frequency domain data, just treat each CPU
-        # individually.
-        domains = self.freq_domains or [[c] for c in self.cpus]
-        return pd.concat(
-            [self._get_freq_residency(d) for d in domains],
-            keys=[d[0] for d in domains], axis=1)
-
     @requires_events(['cpu_idle', 'cpu_frequency'])
-    def _get_freq_residency(self, core_group):
+    def _dfg_stats_frequency_residency(self, core_group):
         """
         Get a DataFrame with per core-group frequency residency, i.e. amount of
         time spent at a given frequency in each group.
+
+        Note that this currently only reports a value for frequencies that were
+        observed in the trace.
 
         :param core_group: this can be either a single CPU ID or a list of CPU IDs
             belonging to a group
