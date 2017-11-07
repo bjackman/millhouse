@@ -31,7 +31,7 @@ class CpufreqAnalyzerModule(AnalyzerModule):
     def __init__(self, *args, **kwargs):
         super(CpufreqAnalyzerModule, self).__init__(*args, **kwargs)
 
-        self.freq_domains = self.analyzer.cpufreq_domains
+        self.domains = self.analyzer.cpufreq_domains
         self.frequencies_coherent = None
         self.sanitize_trace_events()
 
@@ -43,10 +43,10 @@ class CpufreqAnalyzerModule(AnalyzerModule):
             self._inject_devlib_events()
 
         # Frequency Coherency Check
-        if self.freq_domains:
+        if self.domains:
             df = self.analyzer.get_trace_event('cpu_frequency')
             self.frequencies_coherent = True
-            for cpus in self.freq_domains:
+            for cpus in self.domains:
                 domain_df = df[df.cpu.isin(cpus)]
                 for chunk in self._chunker(domain_df, len(cpus)):
                     f = chunk.iloc[0].frequency
@@ -69,7 +69,7 @@ class CpufreqAnalyzerModule(AnalyzerModule):
 
     def _inject_devlib_events(self):
         # TODO: We can only do this if we know the frequency domains.
-        if not self.freq_domains:
+        if not self.domains:
             return None
 
         devlib_freq = self.analyzer.get_trace_event('cpu_frequency_devlib')
@@ -101,7 +101,7 @@ class CpufreqAnalyzerModule(AnalyzerModule):
                 # Inject "initial" devlib frequencies
                 os_df = df
                 dl_df = devlib_freq.iloc[:len(self.cpus)]
-                for c in self.freq_domains:
+                for c in self.domains:
                     dl_freqs = dl_df[dl_df.cpu.isin(c)]
                     os_freqs = os_df[os_df.cpu.isin(c)]
                     # All devlib events "before" os-generated events
@@ -112,7 +112,7 @@ class CpufreqAnalyzerModule(AnalyzerModule):
                 # Inject "final" devlib frequencies
                 os_df = df
                 dl_df = devlib_freq.iloc[len(self.cpus):]
-                for c in self.freq_domains:
+                for c in self.domains:
                     dl_freqs = dl_df[dl_df.cpu.isin(c)]
                     os_freqs = os_df[os_df.cpu.isin(c)]
                     # All devlib events "after" os-generated events
