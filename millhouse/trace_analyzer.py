@@ -15,6 +15,7 @@
 
 from millhouse.analyzer_module.cpuidle import IdleAnalyzerModule
 from millhouse.analyzer_module.cpufreq import CpufreqAnalyzerModule
+from millhouse.analyzer_module.thermal import ThermalAnalyzerModule
 
 class TraceAnalyzer(object):
     """
@@ -31,6 +32,7 @@ class TraceAnalyzer(object):
     :ivar cpufreq: :class:`CpuFreqAnalyzerModule` containing CPU frequency
                     analyses.
     :ivar cpuidle: :class:`IdleAnalyzerModule` containing CPU idle state analyses.
+    :ivar thermal: :class:`ThermalAnalyzerModule` containing thermal analyses.
 
     :ivar available_events: List of trace events that are available
 
@@ -76,3 +78,4 @@ class TraceAnalyzer(object):
 
         self.cpuidle = IdleAnalyzerModule(self)
         self.cpufreq = CpufreqAnalyzerModule(self)
+        self.thermal = ThermalAnalyzerModule(self)

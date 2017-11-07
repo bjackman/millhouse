@@ -147,6 +147,16 @@ cpuidle analysis
         Get the amount of time each CPU spent non-idle. Indexed by CPU id, with
         one column, 'active_time'.
 
+Thermal analysis
+..................
+
+.. autoclass:: millhouse.analyzer_module.thermal.ThermalAnalyzerModule
+
+   .. method:: signal.temperature()
+
+        Get a CPU signal showing the temperature of each thermal zone. One
+        column for each thermal zone.
+
 Internal Millhouse APIs
 -----------------------
 
