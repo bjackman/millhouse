@@ -32,6 +32,8 @@ class TraceAnalyzer(object):
                     analyses.
     :ivar idle: :class:`IdleAnalyzerModule` containing CPU idle state analyses.
 
+    :ivar available_events: List of trace events that are available
+
     :param ftrace: :class:`trappy.FTrace` object to base analysis on
 
     :param topology: Optional :class:`trappy.stats.Topology` object describing
