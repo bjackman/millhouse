@@ -16,7 +16,8 @@
 from setuptools import setup, find_packages
 
 REQUIRES = [
-    'trappy' # TODO version?
+    'trappy', # TODO version?
+    'wrapt'
 ]
 
 LONG_DESCRIPTION = "todo"
