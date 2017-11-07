@@ -114,7 +114,7 @@ class AnalyzerModule(object):
         if self.ftrace.normalize_time:
             self.trace_end_time = 0 + self.ftrace.get_duration()
         else:
-            self.__trace_end_time = self.ftrace.basetime + self.ftrace.get_duration()
+            self.trace_end_time = self.ftrace.basetime + self.ftrace.get_duration()
 
     def _do_pivot(self, df, columns):
         """
@@ -149,4 +149,4 @@ class AnalyzerModule(object):
         that signal up to the end of the trace so that it can be usefully
         integrated.
         """
-        return df.append(pd.Series(df.iloc[-1], name=self.__trace_end_time))
+        return df.append(pd.Series(df.iloc[-1], name=self.trace_end_time))
