@@ -113,8 +113,10 @@ cpufreq analysis
             belonging to a group
         :type group: int or list(int)
 
-        :returns: namedtuple(ResidencyTime) - tuple of total and active time
-            dataframes
+        :returns: DataFrame indexed by frequency with two columns: 'total'
+                  (showing the total time spent in a given frequency) and
+                  'active' (showing only the non-idle time spend in each
+                  frequency).
 
 
 cpuidle analysis
