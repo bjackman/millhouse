@@ -92,3 +92,25 @@ class TestIdle(MillhouseTestBase):
         self.assertListEqual(df.index.tolist(), exp_index)
         self.assertListEqual(df['active'].tolist(), exp_states)
 
+    def test_cpu_time(self):
+        ftrace = self.make_ftrace("""
+          <idle>-0     [000]   100.000000: cpu_idle:             state=4294967295 cpu_id=0
+          <idle>-0     [001]   101.000000: cpu_idle:             state=4294967295 cpu_id=1
+          <idle>-0     [002]   102.000000: cpu_idle:             state=4294967295 cpu_id=2
+          <idle>-0     [003]   103.000000: cpu_idle:             state=4294967295 cpu_id=3
+          <idle>-0     [004]   104.000000: cpu_idle:             state=4294967295 cpu_id=4
+          <idle>-0     [000]   600.000000: cpu_idle:             state=0 cpu_id=0
+          <idle>-0     [001]   601.000000: cpu_idle:             state=0 cpu_id=1
+          <idle>-0     [002]   602.000000: cpu_idle:             state=0 cpu_id=2
+          <idle>-0     [003]   603.000000: cpu_idle:             state=0 cpu_id=3
+          <idle>-0     [004]   604.000000: cpu_idle:             state=0 cpu_id=4
+        """)
+
+        analyzer = TraceAnalyzer(ftrace)
+        df = analyzer.cpuidle.stats.cpu_time()
+
+        self.assertEqual(df['active_time'][0], 500)
+        self.assertEqual(df['active_time'][1], 500)
+        self.assertEqual(df['active_time'][2], 500)
+        self.assertEqual(df['active_time'][3], 500)
+        self.assertEqual(df['active_time'][4], 500)

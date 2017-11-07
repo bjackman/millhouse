@@ -17,7 +17,8 @@ import pandas as pd
 
 from millhouse.exception import MissingTraceEventsError
 from millhouse.analyzer_module import requires_events, AnalyzerModule
-from millhouse.utils import drop_consecutive_duplicates as drop_dupes
+from millhouse.utils import (drop_consecutive_duplicates as drop_dupes,
+                             integrate_square_wave)
 
 class IdleAnalyzerModule(AnalyzerModule):
     required_events = ['cpu_idle']
@@ -63,3 +64,7 @@ class IdleAnalyzerModule(AnalyzerModule):
             sr = sr.append(cpu_sr)
         return pd.DataFrame({'cpu': sr}).sort_index()
 
+    def _dfg_stats_cpu_time(self):
+        df = self._dfg_signal_cpu_active()
+        return pd.DataFrame({'active_time': [integrate_square_wave(df[s].dropna())
+                                             for s in df]})

@@ -142,6 +142,11 @@ cpuidle analysis
 
         Get a signal for a reporting where any of a group of CPUs were active
 
+   .. method:: stats.cpu_time()
+
+        Get the amount of time each CPU spent non-idle. Indexed by CPU id, with
+        one column, 'active_time'.
+
 Internal Millhouse APIs
 -----------------------
 
