@@ -38,7 +38,7 @@ class TestIdle(MillhouseTestBase):
         """)
 
         analyzer = TraceAnalyzer(ftrace)
-        df = analyzer.idle.event.cpu_wakeup()
+        df = analyzer.cpuidle.event.cpu_wakeup()
 
         exp_index=[519.021928, 519.022641, 519.022642, 519.022643, 519.022867]
         exp_cpus= [         4,          4,          1,          2,          3]
@@ -57,7 +57,7 @@ class TestIdle(MillhouseTestBase):
         """)
 
         analyzer = TraceAnalyzer(ftrace)
-        df = drop_dupes(analyzer.idle.signal.cluster_active([2, 3]))
+        df = drop_dupes(analyzer.cpuidle.signal.cluster_active([2, 3]))
 
         self.assertTrue(np.isnan(df['active'].iloc[0]))
         df = df.dropna()
@@ -84,7 +84,7 @@ class TestIdle(MillhouseTestBase):
         """)
 
         analyzer = TraceAnalyzer(ftrace)
-        df = drop_dupes(analyzer.idle.signal.cluster_active([0]))
+        df = drop_dupes(analyzer.cpuidle.signal.cluster_active([0]))
         df = df.dropna()
 
         exp_index = [  100., 600.]

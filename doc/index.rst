@@ -95,10 +95,17 @@ millhouse\.analyzer\_module\.cpufreq module
 
 .. autoclass:: millhouse.analyzer_module.cpufreq.CpufreqAnalyzerModule
 
-millhouse\.analyzer\_module\.idle module
-----------------------------------------
+   .. method:: signal.cpu_frequency
 
-.. autoclass:: millhouse.analyzer_module.idle.IdleAnalyzerModule
+        Get a DataFrame showing the frequency of each CPU at each moment
+
+        Columns are CPU IDs.
+
+
+millhouse\.analyzer\_module\.cpuidle module
+-------------------------------------------
+
+.. autoclass:: millhouse.analyzer_module.cpuidle.IdleAnalyzerModule
 
 Internal Millhouse APIs
 -----------------------

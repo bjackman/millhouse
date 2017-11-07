@@ -13,7 +13,7 @@
 # limitations under the License.
 #
 
-from millhouse.analyzer_module.idle import IdleAnalyzerModule
+from millhouse.analyzer_module.cpuidle import IdleAnalyzerModule
 from millhouse.analyzer_module.cpufreq import CpufreqAnalyzerModule
 
 class TraceAnalyzer(object):
@@ -72,5 +72,5 @@ class TraceAnalyzer(object):
                       for e in self.available_events)
         self.cpus = range(max_cpu + 1)
 
-        self.idle = IdleAnalyzerModule(self)
+        self.cpuidle = IdleAnalyzerModule(self)
         self.cpufreq = CpufreqAnalyzerModule(self)

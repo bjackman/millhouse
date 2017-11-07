@@ -162,7 +162,7 @@ class CpufreqAnalyzerModule(AnalyzerModule):
         freq_df = self.ftrace.cpu_frequency.data_frame
         group_freqs = freq_df[freq_df.cpu == _group[0]]
 
-        group_active = self.analyzer.idle.signal.cluster_active(_group)
+        group_active = self.analyzer.cpuidle.signal.cluster_active(_group)
 
         # In order to compute the active time spent at each frequency we
         # multiply 2 square waves:
