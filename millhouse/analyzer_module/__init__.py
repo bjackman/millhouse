@@ -26,8 +26,8 @@ def requires_events(events=None):
     MissingTraceEventsError whenever it is called when the required events are
     missing.
 
-    Note that this decorator has a parameter and so it must have "()" after its
-    name (i.e. you need to write "@requires_events()" above the method name).
+    Note that this decorator has a parameter and so it must have ``()`` after its
+    name (i.e. you need to write ``@requires_events()`` above the method name).
 
     :param events: The list of names of events required by the _dfg method. If
                    None, defaults to the value of the ``required_events``
@@ -47,6 +47,8 @@ def requires_events(events=None):
     return wrapper
 
 class _DfgRegister(object):
+    """Helper class for AnalyzerModule"""
+
     # This class doesn't really do anything except act as an object to hang
     # attributes off, and also provides a more helpful error message for
     # AttributeErrors.
@@ -69,12 +71,7 @@ class _DfgRegister(object):
 
 class AnalyzerModule(object):
     """
-    An object encapsulating a group of analyses that can be done on a trace.
-
-    :ivar analyzer: The `class`:TraceAnalyzer associated with this object
-    :ivar ftrace: Alias for ``analyzer.ftrace``
-
-    TODO .. continue documenting
+    Base class for encapsulating a group of analyses that can be done on a trace.
     """
 
     def __init__(self, analyzer):
@@ -123,9 +120,10 @@ class AnalyzerModule(object):
         If there are two rows in the DataFrame with the same index and the same
         value in the column indicated by 'columns', Pandas raises 'ValueError:
         Index contains duplicate entries, cannot reshape' due to the ambiguity
-        as to which value to take. This solves the issue by taking the _latest_
-        value (i.e. the one with the higher value in the __line column - this is
-        implemented by assuming that __line always increases with iloc).
+        as to which value to take. This solves the issue by taking the *latest*
+        value (i.e. the one with the higher value in the ``__line`` column -
+        this is implemented by assuming that ``__line`` always increases with
+        iloc).
 
         See Pandas documentation for more detail.
         """
@@ -134,6 +132,9 @@ class AnalyzerModule(object):
 
 
     def _add_cpu_columns(self, df):
+        """
+        Add any missing columns, filled with NA, to a CPU signal DataFrame
+        """
         for cpu in self.cpus:
             if cpu not in df.columns:
                 df[cpu] = np.nan

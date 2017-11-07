@@ -149,6 +149,7 @@ mainly be a reference for those who want to add functionality to the library.
 .. automodule:: millhouse.analyzer_module
     :members:
     :undoc-members:
+    :private-members:
 
 .. automodule:: millhouse.utils
     :members:

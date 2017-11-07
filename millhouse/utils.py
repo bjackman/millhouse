@@ -14,5 +14,7 @@
 #
 
 def drop_consecutive_duplicates(df):
-    """TODO doc"""
+    """
+    Drop rows from a DataFrame that are identical to their predecessors
+    """
     return df[df.shift() != df]
