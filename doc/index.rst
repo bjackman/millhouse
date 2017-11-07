@@ -90,25 +90,61 @@ API documentation can be found below.
     :members:
     :undoc-members:
 
-millhouse\.analyzer\_module\.cpufreq module
+cpufreq analysis
 -------------------------------------------
 
 .. autoclass:: millhouse.analyzer_module.cpufreq.CpufreqAnalyzerModule
 
-   .. method:: signal.cpu_frequency
+   .. method:: signal.cpu_frequency()
 
         Get a DataFrame showing the frequency of each CPU at each moment
 
         Columns are CPU IDs.
 
+   .. method:: stats.frequency_residency(self, core_group)
 
-millhouse\.analyzer\_module\.cpuidle module
+        Get a DataFrame with per core-group frequency residency, i.e. amount of
+        time spent at a given frequency in each group.
+
+        Note that this currently only reports a value for frequencies that were
+        observed in the trace.
+
+        :param core_group: this can be either a single CPU ID or a list of CPU IDs
+            belonging to a group
+        :type group: int or list(int)
+
+        :returns: namedtuple(ResidencyTime) - tuple of total and active time
+            dataframes
+
+
+cpuidle analysis
 -------------------------------------------
 
 .. autoclass:: millhouse.analyzer_module.cpuidle.IdleAnalyzerModule
 
+   .. method:: signal.cpu_idle_state()
+
+        Get a CPU signal showing the idle state of each CPU at each moment
+
+   .. method:: signal.cpu_active()
+
+        Get a CPU signal that shows whether a CPU was active (i.e. not idle)
+
+   .. method:: signal.cluster_active(cluster)
+
+        Get a signal for a reporting where any of a group of CPUs were active
+
+        :param cluster: List of CPU IDs to get active signal for
+
+   .. method:: event.cluster_active(cluster)
+
+        Get a signal for a reporting where any of a group of CPUs were active
+
 Internal Millhouse APIs
 -----------------------
+
+The following APIs are internal and unlikely needed for a user - they should
+mainly be a reference for those who want to add functionality to the library.
 
 .. automodule:: millhouse.analyzer_module
     :members:

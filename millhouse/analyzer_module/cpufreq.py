@@ -126,11 +126,6 @@ class CpufreqAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_signal_cpu_frequency(self):
-        """
-        Get a DataFrame showing the frequency of each CPU at each moment
-
-        Columns are CPU IDs.
-        """
         df = self._do_pivot(self.ftrace.cpu_frequency.data_frame,
                             'cpu')['frequency'].ffill()
 
@@ -138,21 +133,6 @@ class CpufreqAnalyzerModule(AnalyzerModule):
 
     @requires_events(['cpu_idle', 'cpu_frequency'])
     def _dfg_stats_frequency_residency(self, core_group):
-        """
-        Get a DataFrame with per core-group frequency residency, i.e. amount of
-        time spent at a given frequency in each group.
-
-        Note that this currently only reports a value for frequencies that were
-        observed in the trace.
-
-        :param core_group: this can be either a single CPU ID or a list of CPU IDs
-            belonging to a group
-        :type group: int or list(int)
-
-        :returns: namedtuple(ResidencyTime) - tuple of total and active time
-            dataframes
-        """
-
         _group = listify(core_group)
 
         if len(_group) > 1 and not self.frequencies_coherent:
