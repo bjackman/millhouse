@@ -30,7 +30,7 @@ class TraceAnalyzer(object):
 
     :ivar cpufreq: :class:`CpuFreqAnalyzerModule` containing CPU frequency
                     analyses.
-    :ivar idle: :class:`IdleAnalyzerModule` containing CPU idle state analyses.
+    :ivar cpuidle: :class:`IdleAnalyzerModule` containing CPU idle state analyses.
 
     :ivar available_events: List of trace events that are available
 
