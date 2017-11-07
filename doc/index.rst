@@ -10,6 +10,40 @@ Welcome to Millhouse's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. automodule:: millhouse.trace_analyzer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+millhouse\.analyzer\_module\.cpufreq module
+-------------------------------------------
+
+.. automodule:: millhouse.analyzer_module.cpufreq
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+millhouse\.analyzer\_module\.idle module
+----------------------------------------
+
+.. automodule:: millhouse.analyzer_module.idle
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Internal Millhouse APIs
+-----------------------
+
+.. automodule:: millhouse.analyzer_module
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: millhouse.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 Indices and tables
