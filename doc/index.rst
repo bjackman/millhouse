@@ -10,7 +10,81 @@ Millhouse: Canned ftrace analyses based on TRAPpy
    :maxdepth: 2
    :caption: Contents:
 
-Here is some text
+This library provides a layer on top of the kernel trace-parsing library
+TRAPpy. While TRAPpy is intended mainly for converting trace objects into Pandas
+DataFrames, this library provides ready-made manipulations which can more
+readily be translated into actionable metrics.
+
+For example, TRAPpy directly exposes the information from ftrace's
+"cpu_frequency" trace events as a Pandas DataFrame, like so:
+
+   >>> import trappy
+   >>> ftrace = trappy.FTrace('path/to/trace.dat')
+   >>> ftrace.cpu_frequency.data_frame.head()
+            __comm  __cpu  __line  __pid  cpu  frequency
+    Time
+    0.193239  sugov:0      0   15933   1247    0     533000
+    0.193269  sugov:0      0   15941   1247    1     533000
+    0.193269  sugov:0      0   15942   1247    2     533000
+    0.193270  sugov:0      0   15943   1247    3     533000
+    0.298908  sugov:4      4   20257   1252    4     903000
+
+While this library provides a more convenient representation of the same data:
+
+    >>> import millhouse
+    >>> analyzer = millhouse.TraceAnalyzer(ftrace)
+    >>> analyzer.cpufreq.signal.cpu_frequency()[[0, 1, 2, 3]].head()
+    cpu              0         1         2         3
+    Time
+    0.193239  533000.0       NaN       NaN       NaN
+    0.193269  533000.0  533000.0  533000.0       NaN
+    0.193270  533000.0  533000.0  533000.0  533000.0
+    0.298908  533000.0  533000.0  533000.0  533000.0
+    0.298919  533000.0  533000.0  533000.0  533000.0
+
+And also a ready-made helper for finding the residency of CPU frequencies for
+given CPUs or groups of CPUs:
+
+    >>> analyzer.cpufreq.stats.frequency_residency(0)
+                active     total
+    frequency
+    533000     0.005428  0.361603
+    999000     0.015519  0.526832
+    1844000    0.037929  0.301168
+
+The benefit of having this analysis in a library not only consolidates code
+where analyses are non-trivial, but also consolidates the avoidance of common
+pitfalls for analyses that do seem trivial.
+
+This library also consolidates post-processing that needs to be done on the
+trace in order to perform anlysis, but that requires semantic knowledge that
+does not belong in TRAPpy. For instance, it is aware of the events injected by
+the devlib library to ensure that CPU frequencies are always available in a
+trace.
+
+To use this library, you need to construct a TRAPpy ``FTrace`` object, use it to
+construct a :class:`TraceAnalyzer`, and then simply call the provided DataFrame
+accessors.
+
+DataFrame accessors are doubly grouped - firstly by the area of kernel behaviour
+to which they pertain (one such group is 'cpufreq'), and secondly by the kind of
+data represented by the returned DataFrame. These kinds of data are:
+
+- *signal*: In these DataFrames, a row represents a snapshot of a value (or, if
+  the DataFrame has multiple columns, a cross-section of several
+  values). :attr:`TraceAnalyzer.cpufreq.signal.cpu_frequency` is one such
+  accessor: a row appears wherever the CPU frequency was set for one
+  or more CPUs, and shows the frequency of each CPU from that point until the
+  next event.
+
+- *event*: In these DataFrames, a row represents an event that
+  occurred. :attr:`TraceAnalyzer.idle.event.cpu_wakeup` is such an acessor: a
+  row represents a moment where a CPU was woken - the 'cpu' column shows which
+  CPU was woken in a given event.
+
+- *stats*: These are higher-level analyses, and their format varies.
+
+API documentation can be found below.
 
 .. automodule:: millhouse.trace_analyzer
     :members:
@@ -24,7 +98,7 @@ millhouse\.analyzer\_module\.cpufreq module
 millhouse\.analyzer\_module\.idle module
 ----------------------------------------
 
-.. autoattribute:: millhouse.analyzer_module.idle.IdleAnalyzerModule.signal
+.. autoclass:: millhouse.analyzer_module.idle.IdleAnalyzerModule
 
 Internal Millhouse APIs
 -----------------------
