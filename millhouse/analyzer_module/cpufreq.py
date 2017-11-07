@@ -18,7 +18,6 @@ import pandas as pd
 from trappy.utils import listify
 
 from millhouse.analyzer_module import requires_events, AnalyzerModule
-from millhouse.exception import MissingTraceEventsError
 from millhouse.utils import integrate_square_wave
 
 class CpufreqAnalyzerModule(AnalyzerModule):

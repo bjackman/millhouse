@@ -15,7 +15,6 @@
 
 import pandas as pd
 
-from millhouse.exception import MissingTraceEventsError
 from millhouse.analyzer_module import requires_events, AnalyzerModule
 from millhouse.utils import (drop_consecutive_duplicates as drop_dupes,
                              integrate_square_wave)
