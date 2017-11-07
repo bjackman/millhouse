@@ -17,9 +17,36 @@ from millhouse.analyzer_module.idle import IdleAnalyzerModule
 from millhouse.analyzer_module.cpufreq import CpufreqAnalyzerModule
 
 class TraceAnalyzer(object):
-    """TODO document"""
+    """
+    The main entry-point class for using this library
+
+    This class encapsulates the analysis of a single TRAPpy ``FTrace`` object.
+    Analyses are grouped by area, for example DataFrame getters related to CPU
+    frequency scaling are attached to the :attr:`cpufreq` attribute.
+
+    Optionally, extra information that is known about the target can be provided
+    as parameters, in which case they will be used to enrich the available
+    analyses.
+
+    :ivar cpufreq: :class:`CpuFreqAnalyzerModule` containing CPU frequency
+                    analyses.
+    :ivar idle: :class:`IdleAnalyzerModule` containing CPU idle state analyses.
+
+    :param ftrace: :class:`trappy.FTrace` object to base analysis on
+
+    :param topology: Optional :class:`trappy.stats.Topology` object describing
+                     the target the trace was collected from. Some analyses will
+                     be enriched if this is provided
+
+    :param cpufreq_domains: Optional list of lists of CPU IDs whose CPU frequencies are
+                            tied together.
+    """
     def get_trace_event(self, event):
-        """TODO doc"""
+        """
+        Helper to return a raw trace event as parsed by TRAPpy
+
+        :param event: Name of the event - e.g. ``"cpu_frequency"``
+        """
         # TODO raise proper error if event missing (and test it)
         return getattr(self.ftrace, event).data_frame
 

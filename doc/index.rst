@@ -3,34 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Millhouse's documentation!
-=====================================
+Millhouse: Canned ftrace analyses based on TRAPpy
+=================================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+Here is some text
+
 .. automodule:: millhouse.trace_analyzer
     :members:
     :undoc-members:
-    :show-inheritance:
-
 
 millhouse\.analyzer\_module\.cpufreq module
 -------------------------------------------
 
-.. automodule:: millhouse.analyzer_module.cpufreq
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. autoclass:: millhouse.analyzer_module.cpufreq.CpufreqAnalyzerModule
 
 millhouse\.analyzer\_module\.idle module
 ----------------------------------------
 
-.. automodule:: millhouse.analyzer_module.idle
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. autoattribute:: millhouse.analyzer_module.idle.IdleAnalyzerModule.signal
 
 Internal Millhouse APIs
 -----------------------
@@ -38,13 +32,10 @@ Internal Millhouse APIs
 .. automodule:: millhouse.analyzer_module
     :members:
     :undoc-members:
-    :show-inheritance:
 
 .. automodule:: millhouse.utils
     :members:
     :undoc-members:
-    :show-inheritance:
-
 
 Indices and tables
 ==================
