@@ -21,9 +21,21 @@ from wrapt import decorator
 from millhouse.exception import MissingTraceEventsError
 
 def requires_events(events=None):
+    """
+    This decorator can be applied to a _dfg method to automatically raise a
+    MissingTraceEventsError whenever it is called when the required events are
+    missing.
+
+    Note that this decorator has a parameter and so it must have "()" after its
+    name (i.e. you need to write "@requires_events()" above the method name).
+
+    :param events: The list of names of events required by the _dfg method. If
+                   None, defaults to the value of the ``required_events``
+                   attribute of the object to which the decorated method is
+                   bound.
+    """
     @decorator
     def wrapper(wrapped, instance, args, kwargs):
-        """TODO doc"""
         # TODO add testcase with an assertRaises
         _events = events or instance.required_events
 
@@ -34,10 +46,11 @@ def requires_events(events=None):
         return wrapped(*args, **kwargs)
     return wrapper
 
-class DfgRegister(object):
+class _DfgRegister(object):
     # This class doesn't really do anything except act as an object to hang
     # attributes off, and also provides a more helpful error message for
     # AttributeErrors.
+
     def __init__(self, name):
         self.name = name
         self.getters = []
@@ -48,22 +61,30 @@ class DfgRegister(object):
 
     def __getattr__(self, name):
         try:
-            return super(DfgRegister, self).__getattr__(name)
+            return super(_DfgRegister, self).__getattr__(name)
         except AttributeError:
             raise AttributeError(
                 "{} doesn't have a DataFrame accessor named '{}' "
                 "Available are: {}".format(self.name, name, self.getters))
 
 class AnalyzerModule(object):
-    """TODO doc"""
+    """
+    An object encapsulating a group of analyses that can be done on a trace.
+
+    :ivar analyzer: The `class`:TraceAnalyzer associated with this object
+    :ivar ftrace: Alias for ``analyzer.ftrace``
+
+    TODO .. continue documenting
+    """
+
     def __init__(self, analyzer):
         self.analyzer = analyzer
         self.ftrace = self.analyzer.ftrace
         self.cpus = analyzer.cpus
 
-        self.event = DfgRegister('{}.event'.format(self.__class__.__name__))
-        self.signal = DfgRegister('{}.signal'.format(self.__class__.__name__))
-        self.stats = DfgRegister('{}.stats'.format(self.__class__.__name__))
+        self.event = _DfgRegister('{}.event'.format(self.__class__.__name__))
+        self.signal = _DfgRegister('{}.signal'.format(self.__class__.__name__))
+        self.stats = _DfgRegister('{}.stats'.format(self.__class__.__name__))
 
         self.available_events = self.analyzer.available_events
 

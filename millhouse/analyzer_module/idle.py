@@ -29,19 +29,26 @@ class IdleAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_signal_cpu_idle_state(self):
-        """TODO doc"""
+        """
+        Get a CPU signal showing the idle state of each CPU at each moment
+        """
         df = self._do_pivot(
             self.ftrace.cpu_idle.data_frame, 'cpu_id')['state'].ffill()
 
         return self._add_cpu_columns(df)
 
     def _dfg_signal_cpu_active(self):
-        """TODO doc, test"""
+        """
+        Get a CPU signal that shows whether a CPU was active (i.e. not idle)
+        """
         df = self.signal.cpu_idle_state()
         df[~df.isnull()] = (df == -1)
         return df
 
     def _dfg_signal_cluster_active(self, cluster):
+        """
+        Get a signal for a reporting where any of a group of CPUs were active
+        """
         df = self.signal.cpu_active()[cluster]
 
         # Cluster active is the OR between the actives on each CPU
@@ -53,7 +60,12 @@ class IdleAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_event_cpu_wakeup(self):
-        """TODO doc"""
+        """
+        Get a a DataFrame of events where a CPU was woken
+
+        Has a single column "cpu", reporting which CPU was woken at the time
+        reported in the index.
+        """
         sr = pd.Series()
         state_df = self.signal.cpu_idle_state()
         for cpu in self.cpus:

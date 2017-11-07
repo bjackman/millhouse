@@ -126,7 +126,11 @@ class CpufreqAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_signal_cpu_frequency(self):
-        """TODO doc"""
+        """
+        Get a DataFrame showing the frequency of each CPU at each moment
+
+        Columns are CPU IDs.
+        """
         df = self._do_pivot(self.ftrace.cpu_frequency.data_frame,
                             'cpu')['frequency'].ffill()
 
