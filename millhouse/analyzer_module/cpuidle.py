@@ -32,7 +32,7 @@ class IdleAnalyzerModule(AnalyzerModule):
         df = self._do_pivot(
             self.ftrace.cpu_idle.data_frame, 'cpu_id')['state'].ffill()
 
-        return self._add_cpu_columns(df)
+        return self._add_cpu_columns(self._extrude_signal(df))
 
     def _dfg_signal_cpu_active(self):
         df = self.signal.cpu_idle_state()
