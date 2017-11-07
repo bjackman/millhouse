@@ -13,17 +13,13 @@
 # limitations under the License.
 #
 
-import numpy as np
 import pandas as pd
 
 from trappy.utils import listify
 
-from millhouse.exception import MissingTraceEventsError
 from millhouse.analyzer_module import requires_events, AnalyzerModule
-
-def integrate_square_wave(series):
-    values = series.values[:-1]
-    return float((values * np.diff(series.index)).sum())
+from millhouse.exception import MissingTraceEventsError
+from millhouse.utils import integrate_square_wave
 
 class CpufreqAnalyzerModule(AnalyzerModule):
     required_events = ['cpu_frequency']

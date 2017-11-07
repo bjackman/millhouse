@@ -13,8 +13,17 @@
 # limitations under the License.
 #
 
+import numpy as np
+
 def drop_consecutive_duplicates(df):
     """
     Drop rows from a DataFrame that are identical to their predecessors
     """
     return df[df.shift() != df]
+
+def integrate_square_wave(series):
+    """
+    Return the integral of a pandas Series consisting of just 0 and 1 values
+    """
+    values = series.values[:-1]
+    return float((values * np.diff(series.index)).sum())
