@@ -183,6 +183,10 @@ class CpufreqAnalyzerModule(AnalyzerModule):
             freq_active = group_freqs['frequency'] == f
             active_t = group_freqs.active * freq_active
 
+            # There will be a region where we don't know the active/idle state
+            # of some CPUs - just drop that part.
+            active_t = active_t.dropna()
+
             # Compute total time by integrating the square wave
             nonidle_time.append(integrate_square_wave(active_t))
             total_time.append(integrate_square_wave(freq_active))
