@@ -72,12 +72,18 @@ class _DfgRegister(object):
 class AnalyzerModule(object):
     """
     Base class for encapsulating a group of analyses that can be done on a trace.
+
+    :param analyzer: :class:`TraceAnalyzer` this module is attached to
+    :param window: Processed ``(start_time, end_time)`` tuple based on
+                   ``analyzer.ftrace`` and ``analyzer``'s ``window``
+                   param. Neither value should be ``None``.
     """
 
-    def __init__(self, analyzer):
+    def __init__(self, analyzer, window):
         self.analyzer = analyzer
         self.ftrace = self.analyzer.ftrace
         self.cpus = analyzer.cpus
+        self.window = window
 
         self.event = _DfgRegister('{}.event'.format(self.__class__.__name__))
         self.signal = _DfgRegister('{}.signal'.format(self.__class__.__name__))
@@ -108,11 +114,6 @@ class AnalyzerModule(object):
             name = attr[len(prefix):]
             register.add_getter(name, getattr(self, attr))
 
-        if self.ftrace.normalize_time:
-            self.trace_end_time = 0 + self.ftrace.get_duration()
-        else:
-            self.trace_end_time = self.ftrace.basetime + self.ftrace.get_duration()
-
     def _do_pivot(self, df, columns):
         """
         Perform a DataFrame pivot, dealing with duplicate indices as necessary
@@ -142,12 +143,37 @@ class AnalyzerModule(object):
 
     def _extrude_signal(self, df):
         """
-        Duplicate the last event of a signal DataFrame at the end of the trace
+        Extend signal so there is an event at the beginning and end of window
 
         Where you have a DataFrame that represents a signal, and the last event
         is not at the end of the trace (e.g. because your CPU frequency did not
         change in the last 500ms of the trace), this can be used to 'extrude'
         that signal up to the end of the trace so that it can be usefully
-        integrated.
+        integrated. Where the 'window' parameter excludes an event at the
+        beginning of the trace (e.g. because the CPU frequency did not change
+        during the region of interest), it duplicates that event at the beginning
+        of the window.
+
+        I.e. this converts from:
+
+             x--------------y-----------------------
+                    ^               ^
+                window[0]       window[1]
+
+        to:
+
+             -------x-------y-------y
+                    ^               ^
+                window[0]       window[1]
         """
-        return df.append(pd.Series(df.iloc[-1], name=self.trace_end_time))
+        start, end = self.window
+        index = df[start:end].index.tolist()
+        if index:
+            if start < index[0]:
+                index = [start] + index
+            if end > index[-1]:
+                index.append(end)
+        else:
+            index = [start, end]
+
+        return df.reindex(index, method='ffill')

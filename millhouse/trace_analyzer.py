@@ -38,9 +38,27 @@ class TraceAnalyzer(object):
 
     :param ftrace: :class:`trappy.FTrace` object to base analysis on
 
+    :param window: Tuple of ``(start_time, end_time)`` representing region of
+            trace to analyze. This is distinct from TRAPpy's window: while
+            TRAPpy simply ignores events that fall outside the window,
+            ``TraceAnalyzer`` will still consider them in order to detect the
+            value of signals at the beginning of the trace. For example, suppose
+            the only cpu_frequency events occur at time ``1.0``, and window is
+            ``(2.0, 3.0)``, ``TraceAnalyzer`` will use those cpu_frequency
+            events to determine the CPU frequencies at time 2.0.
+
+            Note that the values of this parameter must play nicely with
+            TRAPpy's time normalization: if :attr:`ftrace` was constructed with
+            ``normalize_time=False``, ``window=(0, 10)`` will probably not
+            include any data (since the first event in the trace probably has a
+            timestamp later than ``10.0``)
+
+            Both elements are optional: ``None`` means use up to the
+            beginning/end of the trace.
+
     :param topology: Optional :class:`trappy.stats.Topology` object describing
-                     the target the trace was collected from. Some analyses will
-                     be enriched if this is provided
+            the target the trace was collected from. Some analyses will be
+            enriched if this is provided
 
     :param cpufreq_domains: Optional list of lists of CPU IDs whose CPU frequencies are
                             tied together.
@@ -54,7 +72,7 @@ class TraceAnalyzer(object):
         # TODO raise proper error if event missing (and test it)
         return getattr(self.ftrace, event).data_frame
 
-    def __init__(self, ftrace, topology=None, cpufreq_domains=None):
+    def __init__(self, ftrace, window=(None, None), topology=None, cpufreq_domains=None):
         self.ftrace = ftrace
         self.topology = topology
         self.cpufreq_domains = cpufreq_domains
@@ -76,6 +94,13 @@ class TraceAnalyzer(object):
                       for e in self.available_events)
         self.cpus = range(max_cpu + 1)
 
-        self.cpuidle = IdleAnalyzerModule(self)
-        self.cpufreq = CpufreqAnalyzerModule(self)
-        self.thermal = ThermalAnalyzerModule(self)
+        start, end = window
+        if start is None:
+            start = self.ftrace.basetime
+        if end is None:
+            end = self.ftrace.basetime + self.ftrace.get_duration()
+        window = (start, end)
+
+        self.cpuidle = IdleAnalyzerModule(self, window)
+        self.cpufreq = CpufreqAnalyzerModule(self, window)
+        self.thermal = ThermalAnalyzerModule(self, window)
