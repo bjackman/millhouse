@@ -99,7 +99,7 @@ cpufreq analysis
 
         Get a DataFrame showing the frequency of each CPU at each moment
 
-        Columns are CPU IDs.
+        Columns are CPU IDs. Units are Hz.
 
    .. method:: stats.frequency_residency(self, core_group)
 
@@ -145,7 +145,7 @@ cpuidle analysis
    .. method:: stats.cpu_time()
 
         Get the amount of time each CPU spent non-idle. Indexed by CPU id, with
-        one column, 'active_time'.
+        one column, 'active_time'. Units are CPU-seconds.
 
 Thermal analysis
 ..................
@@ -154,7 +154,7 @@ Thermal analysis
 
    .. method:: signal.temperature()
 
-        Get a CPU signal showing the temperature of each thermal zone. One
+        Get a signal showing the temperature in milliCelcius of each thermal zone. One
         column for each thermal zone.
 
    .. method:: stats.avg_temperature()
