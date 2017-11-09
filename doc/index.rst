@@ -157,6 +157,15 @@ Thermal analysis
         Get a CPU signal showing the temperature of each thermal zone. One
         column for each thermal zone.
 
+   .. method:: stats.avg_temperature()
+
+        Get a DataFrame showing the average temperature in milliCelcius of each
+        thermal zone during the trace collection. Linearly interpolates
+        temperatures reported in the trace.
+
+        Return DataFrame has a single column 'avg_temperature' and uses the zone
+        IDs as index labels.
+
 Internal Millhouse APIs
 -----------------------
 

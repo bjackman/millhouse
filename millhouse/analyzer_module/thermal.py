@@ -13,6 +13,9 @@
 # limitations under the License.
 #
 
+import numpy as np
+import pandas as pd
+
 from millhouse.analyzer_module import requires_events, AnalyzerModule
 
 class ThermalAnalyzerModule(AnalyzerModule):
@@ -24,3 +27,16 @@ class ThermalAnalyzerModule(AnalyzerModule):
         df = self._extrude_signal(df)
         return self._do_pivot(df, 'thermal_zone')['temp']
 
+    def _dfg_stats_avg_temperature(self):
+        df = self._dfg_signal_temperature().dropna()
+        duration = df.index[-1] - df.index[0]
+
+        zones = df.columns.tolist()
+        avgs = []
+        for zone in zones:
+            if duration == 0:
+                avgs.append(np.nan)
+            else:
+                avgs.append(np.trapz(df[zone], df.index) / duration)
+
+        return pd.DataFrame({'avg_temperature': avgs}, index=zones)
