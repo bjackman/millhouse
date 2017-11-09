@@ -16,11 +16,11 @@
 from millhouse.analyzer_module import requires_events, AnalyzerModule
 
 class ThermalAnalyzerModule(AnalyzerModule):
-    required_events = ['thermal_temperature']
+    required_events = ['thermal']
 
     @requires_events()
     def _dfg_signal_temperature(self):
-        df = self.ftrace.thermal_temperature.data_frame
+        df = self.ftrace.thermal.data_frame
         df = self._extrude_signal(df)
         return self._do_pivot(df, 'thermal_zone')['temp']
 
