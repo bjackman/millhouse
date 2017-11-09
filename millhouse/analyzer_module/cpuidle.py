@@ -49,12 +49,6 @@ class IdleAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_event_cpu_wakeup(self):
-        """
-        Get a a DataFrame of events where a CPU was woken
-
-        Has a single column "cpu", reporting which CPU was woken at the time
-        reported in the index.
-        """
         sr = pd.Series()
         state_df = self.signal.cpu_idle_state()
         for cpu in self.cpus:

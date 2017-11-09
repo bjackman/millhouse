@@ -142,6 +142,13 @@ cpuidle analysis
 
         Get a signal for a reporting where any of a group of CPUs were active
 
+   .. method:: event.cpu_wakeup():
+
+        Get a a DataFrame of events where a CPU was woken
+
+        Has a single column "cpu", reporting which CPU was woken at the time
+        reported in the index.
+
    .. method:: stats.cpu_time()
 
         Get the amount of time each CPU spent non-idle. Indexed by CPU id, with
