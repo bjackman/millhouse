@@ -138,7 +138,7 @@ cpuidle analysis
 
         :param cluster: List of CPU IDs to get active signal for
 
-   .. method:: event.cluster_active(cluster)
+   .. method:: signal.cluster_active(cluster)
 
         Get a signal for a reporting where any of a group of CPUs were active
 
