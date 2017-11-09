@@ -121,6 +121,9 @@ class CpufreqAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_signal_cpu_frequency(self):
+        # Looking for a docstring? See the .rst file(s) in doc/ for all the _dfg
+        # methods' documentation.
+
         df = self._do_pivot(self.ftrace.cpu_frequency.data_frame,
                             'cpu')['frequency'].ffill()
 

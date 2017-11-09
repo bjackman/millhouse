@@ -27,6 +27,9 @@ class IdleAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_signal_cpu_idle_state(self):
+        # Looking for a docstring? See the .rst file(s) in doc/ for all the _dfg
+        # methods' documentation.
+
         df = self._do_pivot(
             self.ftrace.cpu_idle.data_frame, 'cpu_id')['state'].ffill()
 

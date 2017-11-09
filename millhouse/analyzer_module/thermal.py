@@ -23,6 +23,9 @@ class ThermalAnalyzerModule(AnalyzerModule):
 
     @requires_events()
     def _dfg_signal_temperature(self):
+        # Looking for a docstring? See the .rst file(s) in doc/ for all the _dfg
+        # methods' documentation.
+
         df = self.ftrace.thermal.data_frame
         df = self._extrude_signal(df)
         return self._do_pivot(df, 'thermal_zone')['temp']
