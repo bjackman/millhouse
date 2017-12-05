@@ -154,13 +154,13 @@ class AnalyzerModule(object):
         during the region of interest), it duplicates that event at the beginning
         of the window.
 
-        I.e. this converts from:
+        I.e. this converts from::
 
              x--------------y-----------------------
                     ^               ^
                 window[0]       window[1]
 
-        to:
+        to::
 
              -------x-------y-------y
                     ^               ^
